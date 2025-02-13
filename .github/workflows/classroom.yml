@@ -1,0 +1,70 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: test_process_sentences
+      id: test_process_sentences
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_process_sentences
+        setup-command: pip install -r requirements.txt
+        command: pytest test.py -k 'test_process_sentences'
+        timeout: 10
+        max-score: 20
+    - name: test_load_model
+      id: test_load_model
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_load_model
+        setup-command: ''
+        command: pytest test.py -k 'test_load_model'
+        timeout: 10
+        max-score: 20
+    - name: test_cosine_similarity
+      id: test_cosine_similarity
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_cosine_similarity
+        setup-command: ''
+        command: pytest test.py -k 'test_cosine_similarity'
+        timeout: 10
+        max-score: 20
+    - name: test_scale_similarities
+      id: test_scale_similarities
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_scale_similarities
+        setup-command: ''
+        command: pytest test.py -k 'test_scale_similarities'
+        timeout: 10
+        max-score: 20
+    - name: test_word_movers_similarity
+      id: test_word_movers_similarity
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: test_word_movers_similarity
+        setup-command: ''
+        command: pytest test.py -k 'test_word_movers_similarity'
+        timeout: 10
+        max-score: 20
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        TEST_PROCESS_SENTENCES_RESULTS: "${{steps.test_process_sentences.outputs.result}}"
+        TEST_LOAD_MODEL_RESULTS: "${{steps.test_load_model.outputs.result}}"
+        TEST_COSINE_SIMILARITY_RESULTS: "${{steps.test_cosine_similarity.outputs.result}}"
+        TEST_SCALE_SIMILARITIES_RESULTS: "${{steps.test_scale_similarities.outputs.result}}"
+        TEST_WORD_MOVERS_SIMILARITY_RESULTS: "${{steps.test_word_movers_similarity.outputs.result}}"
+      with:
+        runners: test_process_sentences,test_load_model,test_cosine_similarity,test_scale_similarities,test_word_movers_similarity
